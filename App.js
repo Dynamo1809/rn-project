@@ -1,6 +1,4 @@
-import { useCallback, useState, useEffect } from 'react';
-import * as Font from 'expo-font';
-import { useFonts } from 'expo-font';
+import { useState, useEffect } from 'react';
 import * as SplashScreen from 'expo-splash-screen';
 import Entypo from '@expo/vector-icons/Entypo';
 import { StatusBar } from 'expo-status-bar';
@@ -14,44 +12,74 @@ import {
   Platform,
   Keyboard,
   Alert,
-  Button,
   ImageBackground,
+  TouchableOpacity,
+  Dimensions,
 } from 'react-native';
 
-export default function App() {
-  const [name, setName] = useState('');
-  const [password, setPassword] = useState('');
+const secondaryColor = '#f0f8ff';
+const mainColor = '#4169e1';
 
-  const nameHandler = (text) => setName(text);
-  const passwordHandler = (text) => setPassword(text);
+const initialState = {
+  email: '',
+  password: '',
+};
+
+export default function App() {
+  const [state, setState] = useState(initialState);
+  const [isShowKeyboard, setIsShowKeyboard] = useState(false);
+  const [dimension, setDimension] = useState(Dimensions.get('window').width - 40 * 2);
+
+  useEffect(() => {
+    const onChange = () => {
+      const width = Dimensions.get('window').width - 40 * 2;
+      setDimension(width);
+    };
+    const subscription = Dimensions.addEventListener('change', onChange);
+    return () => {
+      subscription.remove();
+    };
+  }, []);
 
   const onLogin = () => {
-    Alert.alert('Credentials:', `${name} + ${password}`);
+    Alert.alert('Credentials:', `${state.email} + ${state.password}`);
+    setIsShowKeyboard(false);
+    Keyboard.dismiss();
+    setState(initialState);
   };
-  // onLayout = { onLayoutRootView };
+
+  const keyboardHide = () => {
+    setIsShowKeyboard(false);
+    Keyboard.dismiss();
+  };
+
   return (
-    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+    <TouchableWithoutFeedback onPress={keyboardHide}>
       <View style={styles.container}>
         <ImageBackground style={styles.image} source={require('./images/beach.jpg')} resizeMode="cover">
-          <Text style={styles.title}>Welcome</Text>
+          <Text style={styles.title}>Welcome!</Text>
           <KeyboardAvoidingView behavior={Platform.OS == 'ios' ? 'padding' : 'height'}>
-            <View>
+            <View style={{ ...styles.form, marginBottom: isShowKeyboard ? 10 : 100, width: dimension }}>
               <TextInput
                 textAlign="center"
-                value={name}
-                onChangeText={nameHandler}
-                placeholder="Username"
+                value={state.email}
+                onChangeText={(value) => setState((prevState) => ({ ...prevState, email: value }))}
+                onFocus={() => setIsShowKeyboard(true)}
+                placeholder="Email"
                 style={styles.input}
               />
               <TextInput
                 textAlign="center"
-                value={password}
-                onChangeText={passwordHandler}
+                value={state.password}
+                onChangeText={(value) => setState((prevState) => ({ ...prevState, password: value }))}
+                onFocus={() => setIsShowKeyboard(true)}
                 placeholder="Password"
                 secureTextEntry={true}
                 style={styles.input}
               />
-              <Button title={'Login'} style={styles.input} onPress={onLogin} />
+              <TouchableOpacity activeOpacity={0.8} style={styles.btn} onPress={onLogin}>
+                <Text style={styles.btnTitle}>SIGN IN</Text>
+              </TouchableOpacity>
             </View>
           </KeyboardAvoidingView>
 
@@ -65,25 +93,40 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-  },
-  title: {
-    fontSize: 25,
-    marginBottom: 20,
-  },
-  input: {
-    color: '#fff',
-    fontSize: 20,
-    width: 200,
-    height: 44,
-    padding: 10,
-    borderWidth: 1,
-    borderColor: 'black',
-    borderRadius: 10,
-    marginBottom: 10,
+    backgroundColor: secondaryColor,
   },
   image: {
     flex: 1,
     alignItems: 'center',
+    justifyContent: 'flex-end',
+  },
+  title: {
+    marginBottom: 20,
+    fontSize: 25,
+  },
+  input: {
+    height: 44,
+    marginBottom: 10,
+    padding: 10,
+    borderWidth: 1,
+    borderRadius: 6,
+    borderColor: mainColor,
+    color: mainColor,
+    backgroundColor: secondaryColor,
+    fontSize: 20,
+  },
+  btn: {
     justifyContent: 'center',
+    alignItems: 'center',
+    height: 30,
+    marginTop: 10,
+    marginHorizontal: 80,
+    borderWidth: 2,
+    borderRadius: 10,
+    backgroundColor: mainColor,
+  },
+  btnTitle: {
+    color: secondaryColor,
+    fontSize: 16,
   },
 });
