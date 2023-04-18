@@ -1,26 +1,19 @@
 import { useState, useEffect } from 'react';
-import { StatusBar } from 'expo-status-bar';
-import {
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableWithoutFeedback,
-  View,
-  KeyboardAvoidingView,
-  Platform,
-  Keyboard,
-  Alert,
-  ImageBackground,
-  TouchableOpacity,
-  Dimensions,
-} from 'react-native';
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 import LoginScreen from './screens/LoginScreen';
+import RegistrationScreen from './screens/RegistrationScreen';
+
+const AuthStack = createNativeStackNavigator();
 
 export default function App() {
   return (
-    <>
-      <LoginScreen />
-    </>
+    <NavigationContainer>
+      <AuthStack.Navigator>
+        <AuthStack.Screen options={{ headerShown: false }} name="Registration" component={RegistrationScreen} />
+        <AuthStack.Screen options={{ headerShown: false }} name="Login" component={LoginScreen} />
+      </AuthStack.Navigator>
+    </NavigationContainer>
   );
 }

@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import { StatusBar } from 'expo-status-bar';
 import {
   StyleSheet,
   Text,
@@ -9,7 +8,6 @@ import {
   KeyboardAvoidingView,
   Platform,
   Keyboard,
-  Alert,
   ImageBackground,
   TouchableOpacity,
   Dimensions,
@@ -23,7 +21,7 @@ const initialState = {
   password: '',
 };
 
-export default function LoginScreen() {
+export default function LoginScreen({ navigation }) {
   const [state, setState] = useState(initialState);
   const [isShowKeyboard, setIsShowKeyboard] = useState(false);
   const [dimension, setDimension] = useState(Dimensions.get('window').width - 40 * 2);
@@ -40,7 +38,6 @@ export default function LoginScreen() {
   }, []);
 
   const onLogin = () => {
-    Alert.alert('Credentials:', `${state.email} + ${state.password}`);
     setIsShowKeyboard(false);
     Keyboard.dismiss();
     setState(initialState);
@@ -78,10 +75,13 @@ export default function LoginScreen() {
               <TouchableOpacity activeOpacity={0.8} style={styles.btn} onPress={onLogin}>
                 <Text style={styles.btnTitle}>SIGN IN</Text>
               </TouchableOpacity>
+              <TouchableOpacity onPress={() => navigation.navigate('Registration')}>
+                <Text>
+                  Don't have an account? <Text>Sign Up</Text>
+                </Text>
+              </TouchableOpacity>
             </View>
           </KeyboardAvoidingView>
-
-          <StatusBar style="auto" />
         </ImageBackground>
       </View>
     </TouchableWithoutFeedback>
