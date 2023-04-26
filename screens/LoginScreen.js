@@ -13,8 +13,9 @@ import {
   Dimensions,
 } from 'react-native';
 
-const secondaryColor = '#f0f8ff';
 const mainColor = '#4169e1';
+const secondaryColor = '#f0f8ff';
+const tertiaryColor = `#a52a2a`;
 
 const initialState = {
   email: '',
@@ -75,11 +76,12 @@ export default function LoginScreen({ navigation }) {
               <TouchableOpacity activeOpacity={0.8} style={styles.btn} onPress={onLogin}>
                 <Text style={styles.btnTitle}>SIGN IN</Text>
               </TouchableOpacity>
-              <TouchableOpacity onPress={() => navigation.navigate('Registration')}>
-                <Text>
-                  Don't have an account? <Text>Sign Up</Text>
-                </Text>
-              </TouchableOpacity>
+              <View style={styles.redirectionContainer}>
+                <Text style={styles.redirectionTitle}>Don't have an account?</Text>
+                <TouchableOpacity style={styles.redirectionBtn} onPress={() => navigation.navigate('Registration')}>
+                  <Text style={styles.redirectionText}>Sign Up</Text>
+                </TouchableOpacity>
+              </View>
             </View>
           </KeyboardAvoidingView>
         </ImageBackground>
@@ -127,4 +129,13 @@ const styles = StyleSheet.create({
     color: secondaryColor,
     fontSize: 16,
   },
+  redirectionContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 5,
+    justifyContent: 'center',
+  },
+  redirectionBtn: { border: 0 },
+  redirectionTitle: { fontSize: 16 },
+  redirectionText: { marginLeft: 4, color: tertiaryColor, fontSize: 16 },
 });
