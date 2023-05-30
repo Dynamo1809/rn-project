@@ -1,27 +1,32 @@
 import { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
-
+import * as Location from 'expo-location';
 import { Camera } from 'expo-camera';
 
 const mainColor = '#4169e1';
 const secondaryColor = '#f0f8ff';
-const tertiaryColor = `#a52a2a`;
 
 const CreateScreen = ({ navigation }) => {
   const [camera, setCamera] = useState(null);
   const [photo, setPhoto] = useState('');
 
   const takePhoto = async () => {
+    let { status } = await Location.requestForegroundPermissionsAsync();
+    if (status !== 'granted') {
+      console.warn('Permission to access location was denied');
+      return;
+    }
     const photo = await camera.takePictureAsync();
     setPhoto(photo.uri);
+    const location = await Location.getCurrentPositionAsync();
+    console.log('🚀 ~ file: CreateScreen.js:16 ~ takePhoto ~ location:', location);
   };
 
   const sendPhoto = () => {
-    navigation.navigate('Posts', { photo });
+    navigation.navigate('DefaultScreen', { photo });
   };
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>CreateScreen</Text>
       <Camera style={styles.camera} ref={setCamera}>
         {photo && (
           <View style={styles.takePhotoContainer}>
@@ -54,11 +59,6 @@ const CreateScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-  },
-  header: {
-    marginTop: 40,
-    marginLeft: 'auto',
-    marginRight: 'auto',
   },
   camera: {
     alignItems: 'center',
