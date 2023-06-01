@@ -12,6 +12,9 @@ import {
   TouchableOpacity,
   Dimensions,
 } from 'react-native';
+import { useDispatch } from 'react-redux';
+
+import { authSignInUser } from '../redux/auth/authOperations';
 
 const mainColor = '#4169e1';
 const secondaryColor = '#f0f8ff';
@@ -27,6 +30,8 @@ export default function LoginScreen({ navigation }) {
   const [isShowKeyboard, setIsShowKeyboard] = useState(false);
   const [dimension, setDimension] = useState(Dimensions.get('window').width - 40 * 2);
 
+  const dispatch = useDispatch();
+
   useEffect(() => {
     const onChange = () => {
       const width = Dimensions.get('window').width - 40 * 2;
@@ -38,7 +43,8 @@ export default function LoginScreen({ navigation }) {
     };
   }, []);
 
-  const onLogin = () => {
+  const handleSubmit = () => {
+    dispatch(authSignInUser(state));
     setIsShowKeyboard(false);
     Keyboard.dismiss();
     setState(initialState);
@@ -73,7 +79,7 @@ export default function LoginScreen({ navigation }) {
                 secureTextEntry={true}
                 style={styles.input}
               />
-              <TouchableOpacity activeOpacity={0.8} style={styles.btn} onPress={onLogin}>
+              <TouchableOpacity activeOpacity={0.8} style={styles.btn} onPress={handleSubmit}>
                 <Text style={styles.btnTitle}>SIGN IN</Text>
               </TouchableOpacity>
               <View style={styles.redirectionContainer}>

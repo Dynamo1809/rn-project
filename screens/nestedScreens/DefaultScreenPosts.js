@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, FlatList, Image, TouchableOpacity, Button } from 'react-native';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { View, StyleSheet, FlatList, Image, Button, Text } from 'react-native';
 
 const DefaultScreenPosts = ({ route, navigation }) => {
   const [posts, setPosts] = useState([]);
@@ -20,10 +19,10 @@ const DefaultScreenPosts = ({ route, navigation }) => {
             <Image source={{ uri: item.photo }} style={styles.image} />
           </View>
         )}
-        keyExtractor={(item, index) => index.toString()}
+        keyExtractor={(_, index) => index.toString()}
       />
-      <Button title="Go to Map" onPress={() => navigation.navigate('Map')} />
-      <Button title="Go to Comments" onPress={() => navigation.navigate('Comments')} />
+      <Button title="Go to Map" onPress={() => navigation.navigate('Map')}></Button>
+      <Button title="Go to Comments" onPress={() => navigation.navigate('Comments')}></Button>
     </View>
   );
 };

@@ -12,6 +12,9 @@ import {
   TouchableOpacity,
   Dimensions,
 } from 'react-native';
+import { useDispatch } from 'react-redux';
+
+import { authSignUpUser } from '../redux/auth/authOperations';
 
 const secondaryColor = '#f0f8ff';
 const mainColor = '#4169e1';
@@ -28,6 +31,8 @@ export default function LoginScreen({ navigation }) {
   const [isShowKeyboard, setIsShowKeyboard] = useState(false);
   const [dimension, setDimension] = useState(Dimensions.get('window').width - 40 * 2);
 
+  const dispatch = useDispatch();
+
   useEffect(() => {
     const onChange = () => {
       const width = Dimensions.get('window').width - 40 * 2;
@@ -39,7 +44,8 @@ export default function LoginScreen({ navigation }) {
     };
   }, []);
 
-  const onLogin = () => {
+  const handleSubmit = () => {
+    dispatch(authSignUpUser(state));
     setIsShowKeyboard(false);
     Keyboard.dismiss();
     setState(initialState);
@@ -59,18 +65,18 @@ export default function LoginScreen({ navigation }) {
             <View style={{ ...styles.form, marginBottom: isShowKeyboard ? 10 : 100, width: dimension }}>
               <TextInput
                 textAlign="center"
-                value={state.email}
-                onChangeText={(value) => setState((prevState) => ({ ...prevState, email: value }))}
-                onFocus={() => setIsShowKeyboard(true)}
-                placeholder="Email"
-                style={styles.input}
-              />
-              <TextInput
-                textAlign="center"
                 value={state.username}
                 onChangeText={(value) => setState((prevState) => ({ ...prevState, username: value }))}
                 onFocus={() => setIsShowKeyboard(true)}
                 placeholder="Username"
+                style={styles.input}
+              />
+              <TextInput
+                textAlign="center"
+                value={state.email}
+                onChangeText={(value) => setState((prevState) => ({ ...prevState, email: value }))}
+                onFocus={() => setIsShowKeyboard(true)}
+                placeholder="Email"
                 style={styles.input}
               />
               <TextInput
@@ -82,7 +88,7 @@ export default function LoginScreen({ navigation }) {
                 secureTextEntry={true}
                 style={styles.input}
               />
-              <TouchableOpacity activeOpacity={0.8} style={styles.btn} onPress={onLogin}>
+              <TouchableOpacity activeOpacity={0.8} style={styles.btn} onPress={handleSubmit}>
                 <Text style={styles.btnTitle}>SIGN UP</Text>
               </TouchableOpacity>
               <View style={styles.redirectionContainer}>
