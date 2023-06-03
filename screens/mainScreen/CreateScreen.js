@@ -19,7 +19,6 @@ const CreateScreen = ({ navigation }) => {
     const photo = await camera.takePictureAsync();
     setPhoto(photo.uri);
     const location = await Location.getCurrentPositionAsync();
-    console.log('🚀 ~ file: CreateScreen.js:16 ~ takePhoto ~ location:', location);
   };
 
   const sendPhoto = () => {

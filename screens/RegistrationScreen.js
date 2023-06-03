@@ -22,7 +22,7 @@ const tertiaryColor = `#a52a2a`;
 
 const initialState = {
   email: '',
-  username: '',
+  nickname: '',
   password: '',
 };
 
@@ -65,10 +65,10 @@ export default function LoginScreen({ navigation }) {
             <View style={{ ...styles.form, marginBottom: isShowKeyboard ? 10 : 100, width: dimension }}>
               <TextInput
                 textAlign="center"
-                value={state.username}
-                onChangeText={(value) => setState((prevState) => ({ ...prevState, username: value }))}
+                value={state.nickname}
+                onChangeText={(value) => setState((prevState) => ({ ...prevState, nickname: value }))}
                 onFocus={() => setIsShowKeyboard(true)}
-                placeholder="Username"
+                placeholder="Nickname"
                 style={styles.input}
               />
               <TextInput
