@@ -10,13 +10,11 @@ export const authSignUpUser =
       await db.auth().createUserWithEmailAndPassword(email, password);
 
       const user = await db.auth().currentUser;
-      console.log('🚀 ~ file: authOperations.js:11 ~ user:', user);
 
       await user.updateProfile({
         displayName: nickname,
       });
 
-      console.log('user', user);
       const { uid, displayName } = await db.auth().currentUser;
 
       dispatch(updateUserProfile({ userId: uid, nickname: displayName }));
@@ -37,7 +35,7 @@ export const authSignInUser =
     }
   };
 
-export const authSignOutUser = () => async (dispatch, getState) => {
+export const authSignOutUser = () => async (dispatch, _) => {
   try {
     await db.auth().signOut();
     dispatch(authSignOut());
@@ -47,7 +45,7 @@ export const authSignOutUser = () => async (dispatch, getState) => {
   }
 };
 
-export const authStateChangeUser = () => async (dispatch, getState) => {
+export const authStateChangeUser = () => async (dispatch, _) => {
   try {
     await db.auth().onAuthStateChanged((user) => {
       if (user) {

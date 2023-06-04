@@ -1,7 +1,10 @@
 import { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Image, TextInput } from 'react-native';
 import * as Location from 'expo-location';
 import { Camera } from 'expo-camera';
+import { v4 as uuidv4 } from 'uuid';
+
+import db from '../../firebase/config';
 
 const mainColor = '#4169e1';
 const secondaryColor = '#f0f8ff';
@@ -9,21 +12,31 @@ const secondaryColor = '#f0f8ff';
 const CreateScreen = ({ navigation }) => {
   const [camera, setCamera] = useState(null);
   const [photo, setPhoto] = useState('');
+  const [comment, setComment] = useState(null);
+  const [location, setLocation] = useState(null);
 
   const takePhoto = async () => {
     let { status } = await Location.requestForegroundPermissionsAsync();
-    if (status !== 'granted') {
-      console.warn('Permission to access location was denied');
-      return;
-    }
+
     const photo = await camera.takePictureAsync();
     setPhoto(photo.uri);
     const location = await Location.getCurrentPositionAsync();
   };
 
   const sendPhoto = () => {
+    uploadPhotoToServer();
     navigation.navigate('DefaultScreen', { photo });
   };
+
+  const uploadPhotoToServer = async () => {
+    const response = await fetch(photo);
+    const file = await response.blob();
+    const postId = uuidv4();
+    const data = await db.storage().ref(`postImage/${postId}`).put(file);
+
+    const processedPhoto = await db.storage().ref('postImage').child(postId).getDownloadURL();
+  };
+
   return (
     <View style={styles.container}>
       <Camera style={styles.camera} ref={setCamera}>
@@ -41,6 +54,9 @@ const CreateScreen = ({ navigation }) => {
           <Text style={styles.snap}>Snap</Text>
         </TouchableOpacity>
       </Camera>
+      <View style={styles.inputContainer}>
+        <TextInput style={styles.input} />
+      </View>
       <View>
         <TouchableOpacity
           onPress={() => {
@@ -81,11 +97,13 @@ const styles = StyleSheet.create({
   photo: {
     height: 150,
     width: 150,
+    borderRadius: 10,
   },
   takePhotoContainer: {
     position: 'absolute',
     top: 20,
     borderWidth: 1,
+    borderRadius: 10,
     borderColor: secondaryColor,
   },
   sendButton: {
@@ -98,6 +116,18 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     color: mainColor,
     borderColor: mainColor,
+  },
+  inputContainer: {
+    marginTop: 10,
+    marginHorizontal: 10,
+  },
+  input: {
+    height: 50,
+    borderWidth: 1,
+    borderRadius: 10,
+    borderColor: mainColor,
+    padding: 10,
+    fontSize: 18,
   },
   sendText: { fontSize: 20, color: mainColor },
 });
