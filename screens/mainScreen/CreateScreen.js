@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Image, TextInput } from 'react-native';
 import * as Location from 'expo-location';
 import { Camera } from 'expo-camera';
@@ -34,11 +34,15 @@ const CreateScreen = ({ navigation }) => {
   const takePhoto = async () => {
     const photo = await camera.takePictureAsync();
     setPhoto(photo.uri);
+    inputRef.current.value = '';
   };
+
+  const inputRef = useRef();
 
   const sendPhoto = () => {
     uploadPostToServer();
     navigation.navigate('DefaultScreen');
+    inputRef.current.clear();
   };
 
   const uploadPhotoToServer = async () => {
@@ -74,7 +78,7 @@ const CreateScreen = ({ navigation }) => {
         </TouchableOpacity>
       </Camera>
       <View style={styles.inputContainer}>
-        <TextInput style={styles.input} onChangeText={setComment} />
+        <TextInput ref={inputRef} style={styles.input} onChangeText={setComment} />
       </View>
       <View>
         <TouchableOpacity onPress={sendPhoto} style={styles.sendButton}>
