@@ -1,28 +1,42 @@
 import { useState, useEffect } from 'react';
 import { View, StyleSheet, FlatList, Image, Button, Text } from 'react-native';
 
-const DefaultScreenPosts = ({ route, navigation }) => {
+import db from '../../firebase/config';
+
+const tertiaryColor = `#a52a2a`;
+
+const DefaultScreenPosts = ({ navigation }) => {
   const [posts, setPosts] = useState([]);
 
+  const getAllPosts = async () => {
+    await db
+      .firestore()
+      .collection('posts')
+      .onSnapshot((data) => setPosts(data.docs.map((doc) => ({ ...doc.data(), id: doc.id }))));
+  };
+
   useEffect(() => {
-    if (route.params) {
-      setPosts((prevState) => [...prevState, route.params]);
-    }
-  }, [route.params]);
+    getAllPosts();
+  }, []);
 
   return (
     <View style={styles.container}>
       <FlatList
         data={posts}
+        keyExtractor={(_, index) => index.toString()}
         renderItem={({ item }) => (
           <View style={styles.imageContainer}>
             <Image source={{ uri: item.photo }} style={styles.image} />
+            <View>
+              <Text style={styles.commentText}>{item.comment}</Text>
+            </View>
+            <View style={styles.buttonsContainer}>
+              <Button title="Location" onPress={() => navigation.navigate('Map', { location: item.location })}></Button>
+              <Button title="Comments" onPress={() => navigation.navigate('Comments', { postId: item.id })}></Button>
+            </View>
           </View>
         )}
-        keyExtractor={(_, index) => index.toString()}
       />
-      <Button title="Go to Map" onPress={() => navigation.navigate('Map')}></Button>
-      <Button title="Go to Comments" onPress={() => navigation.navigate('Comments')}></Button>
     </View>
   );
 };
@@ -41,6 +55,14 @@ const styles = StyleSheet.create({
   image: {
     height: 180,
     width: '90%',
+  },
+  commentText: {
+    fontSize: 18,
+    color: tertiaryColor,
+  },
+  buttonsContainer: {
+    display: 'flex',
+    flexDirection: 'row',
   },
 });
 

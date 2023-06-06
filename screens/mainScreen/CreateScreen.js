@@ -38,7 +38,7 @@ const CreateScreen = ({ navigation }) => {
 
   const sendPhoto = () => {
     uploadPostToServer();
-    navigation.navigate('DefaultScreen', { photo });
+    navigation.navigate('DefaultScreen');
   };
 
   const uploadPhotoToServer = async () => {
@@ -54,10 +54,7 @@ const CreateScreen = ({ navigation }) => {
   const uploadPostToServer = async () => {
     try {
       const photo = await uploadPhotoToServer();
-      const createPost = await db
-        .firestore()
-        .collection('posts')
-        .add({ userId, nickname, photo, comment, location: location.coords });
+      await db.firestore().collection('posts').add({ userId, nickname, photo, comment, location: location.coords });
     } catch (error) {
       console.log(error);
       console.log(error.message);
@@ -72,12 +69,7 @@ const CreateScreen = ({ navigation }) => {
             <Image source={{ uri: photo }} style={styles.photo} />
           </View>
         )}
-        <TouchableOpacity
-          onPress={() => {
-            takePhoto();
-          }}
-          style={styles.snapContainer}
-        >
+        <TouchableOpacity onPress={takePhoto} style={styles.snapContainer}>
           <Text style={styles.snap}>Snap</Text>
         </TouchableOpacity>
       </Camera>
@@ -150,6 +142,7 @@ const styles = StyleSheet.create({
     borderColor: mainColor,
     padding: 10,
     fontSize: 18,
+    textAlign: 'center',
   },
   sendText: { fontSize: 20, color: mainColor },
 });
