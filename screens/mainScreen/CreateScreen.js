@@ -1,7 +1,8 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Image, TextInput } from 'react-native';
 import * as Location from 'expo-location';
 import { Camera } from 'expo-camera';
+import { useSelector } from 'react-redux';
 import { v4 as uuidv4 } from 'uuid';
 
 import db from '../../firebase/config';
@@ -15,16 +16,28 @@ const CreateScreen = ({ navigation }) => {
   const [comment, setComment] = useState(null);
   const [location, setLocation] = useState(null);
 
-  const takePhoto = async () => {
-    let { status } = await Location.requestForegroundPermissionsAsync();
+  const { nickname, userId } = useSelector((state) => state.auth);
 
+  useEffect(() => {
+    (async () => {
+      let { status } = await Location.requestForegroundPermissionsAsync();
+
+      if (status !== 'granted') {
+        console.log('Premission to access location was denied');
+      }
+
+      const getLocation = await Location.getCurrentPositionAsync();
+      setLocation(getLocation);
+    })();
+  }, []);
+
+  const takePhoto = async () => {
     const photo = await camera.takePictureAsync();
     setPhoto(photo.uri);
-    const location = await Location.getCurrentPositionAsync();
   };
 
   const sendPhoto = () => {
-    uploadPhotoToServer();
+    uploadPostToServer();
     navigation.navigate('DefaultScreen', { photo });
   };
 
@@ -32,9 +45,23 @@ const CreateScreen = ({ navigation }) => {
     const response = await fetch(photo);
     const file = await response.blob();
     const postId = uuidv4();
-    const data = await db.storage().ref(`postImage/${postId}`).put(file);
+    await db.storage().ref(`postImage/${postId}`).put(file);
 
     const processedPhoto = await db.storage().ref('postImage').child(postId).getDownloadURL();
+    return processedPhoto;
+  };
+
+  const uploadPostToServer = async () => {
+    try {
+      const photo = await uploadPhotoToServer();
+      const createPost = await db
+        .firestore()
+        .collection('posts')
+        .add({ userId, nickname, photo, comment, location: location.coords });
+    } catch (error) {
+      console.log(error);
+      console.log(error.message);
+    }
   };
 
   return (
@@ -55,15 +82,10 @@ const CreateScreen = ({ navigation }) => {
         </TouchableOpacity>
       </Camera>
       <View style={styles.inputContainer}>
-        <TextInput style={styles.input} />
+        <TextInput style={styles.input} onChangeText={setComment} />
       </View>
       <View>
-        <TouchableOpacity
-          onPress={() => {
-            sendPhoto();
-          }}
-          style={styles.sendButton}
-        >
+        <TouchableOpacity onPress={sendPhoto} style={styles.sendButton}>
           <Text style={styles.sendText}>Send</Text>
         </TouchableOpacity>
       </View>
