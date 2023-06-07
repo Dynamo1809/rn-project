@@ -9,7 +9,6 @@ const tertiaryColor = `#a52a2a`;
 
 const ProfileScreen = () => {
   const [userPosts, setUserPosts] = useState([]);
-  console.log('🚀 ~ file: een ~ userPosts:', userPosts);
   const dispatch = useDispatch();
   const { userId } = useSelector((state) => state.auth);
 
