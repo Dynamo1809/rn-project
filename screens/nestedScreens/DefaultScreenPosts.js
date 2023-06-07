@@ -8,16 +8,16 @@ const tertiaryColor = `#a52a2a`;
 const DefaultScreenPosts = ({ navigation }) => {
   const [posts, setPosts] = useState([]);
 
+  useEffect(() => {
+    getAllPosts();
+  }, []);
+
   const getAllPosts = async () => {
     await db
       .firestore()
       .collection('posts')
       .onSnapshot((data) => setPosts(data.docs.map((doc) => ({ ...doc.data(), id: doc.id }))));
   };
-
-  useEffect(() => {
-    getAllPosts();
-  }, []);
 
   return (
     <View style={styles.container}>
